@@ -16,10 +16,16 @@ See this [PDF](hw1.pdf) file.
 
 ## Submission
 
-1. Compress your submission folder containg the query files (i.e., q1.sql ~ q7.sql)
-Name the compress file with your student ID (e.g., 123123.zip).
-2. Submit the zip file on the Blackboard. 
+1. Complete your SQL files.
 
+2. Commit and Push 
+| You can commit and push as you can before the deadline For final commit message for final submission, please set the commit message as submission-student-id (e.g., `git commit -m "submission-123123"`)
+
+```
+git add .
+git commit -m "submission-student-id"
+git push
+```
 
 ## Late Submission Policy
 
@@ -36,4 +42,3 @@ Name the compress file with your student ID (e.g., 123123.zip).
 -	Do not modify the database file (i.e., Do not insert/delete/update in the database arbitrarily)
 -	For your query, the order of output columns (attribute) is very important. Please follow the instruction of the problem carefully.
 -	We will evaluate the answer by comparing the output files. Please make sure to always verify your SQL query works properly. (No partial points)
-
