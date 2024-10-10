@@ -1,0 +1,58 @@
+name: Autograding Tests
+on:
+  - push
+  - workflow_dispatch
+  - repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Set up Docker
+      run: |
+        docker run --name ku-mysql \
+        -e MYSQL_ROOT_PASSWORD=admin \
+        -d -p 3306:3306 mysql:8.0.33
+
+    - name: Wait for MySQL to be ready
+      run: |
+        for i in {30..0}; do
+          if docker exec ku-mysql mysqladmin ping -h "127.0.0.1" --silent; then
+            break
+          fi
+          echo 'Waiting for MySQL to be ready...'
+          sleep 1
+        done
+        if [ "$i" = 0 ]; then
+          echo 'MySQL did not become ready in time' >&2
+          exit 1
+        fi
+
+    - name: Load database schema
+      run: |
+        docker exec -i ku-mysql mysql -uroot -padmin < load.sql
+
+    - name: Create solution-q1.sql from secret
+      run: |
+        echo "${{ secrets.SOLUTION_Q1 }}" > solution-q1.sql
+
+    - name: Run and Compare q1.sql
+      run: |
+        docker exec -i ku-mysql mysql -uroot -padmin classicmodels < submission/q1.sql > student-q1-result.txt
+        diff -w student-q1-result.txt solution-q1.sql
+        
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      # For more information on this runner, see the documentation at https://github.com/classroom-resources/autograding-grading-reporter
+      # To output the results of the tests, you can use the
+      # autograding-grading-reporter action like this:
+      # env:
+      # ADDITION-TEST_RESULTS: "${{ steps.addition - test.outputs.result }}"
+      #     with:
+      #         runners: addition-test
