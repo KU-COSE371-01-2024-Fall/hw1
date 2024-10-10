@@ -32,12 +32,8 @@ jobs:
     - name: Load database schema
       run: |
         docker exec -i ku-mysql mysql -uroot -padmin -h127.0.0.1 < load.sql
-
-    - name: Create solution-q1.sql from secret
-      run: |
-        echo "${{ secrets.SOLUTION_Q1 }}" > solution-q1.out
         
     - name: Run and Compare q1.sql
       run: |
         docker exec -i ku-mysql mysql -uroot -padmin -s classicmodels < submission/q1.sql > student-q1-result.txt
-        diff -w student-q1-result.txt solution-q1.out
+        diff -w student-q1-result.txt solutinos/solution-q1.out
